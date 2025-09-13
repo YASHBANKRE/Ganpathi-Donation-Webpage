@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Cha Raja</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* Reset and basic styles */
+* {margin:0; padding:0; box-sizing:border-box;}
+body, html {height:100%; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; scroll-behavior:smooth; overflow-x:hidden; background:#000; color:#fff;}
+
+/* Parallax background */
+body::before{
+    content:"";
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:url('B1.jpg') center center / cover no-repeat fixed;
+    z-index:-2;
+    filter:brightness(0.3);
+}
+
+/* Fireworks canvas */
+#fireworksCanvas {position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none;}
+
+/* Header */
+header {background: rgba(0,0,0,0.85); padding:20px 10px; text-align:center; position:sticky; top:0; z-index:100; display:flex; align-items:center; justify-content:space-between;}
+header h1 {font-size:2em; color:#FFD700; margin-left:10px; text-shadow:0 0 10px #fff;}
+.logo {height:60px; width:60px; border-radius:10px;}
+nav a {margin:0 10px; color:#FFD700; text-decoration:none; font-weight:bold; transition:0.3s;}
+nav a:hover {text-decoration:underline;}
+#langSelect {background:#FFD700; color:#000; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;}
+
+/* Sections */
+section {padding:100px 20px; text-align:center; background:rgba(0,0,0,0.5); margin:20px auto; border-radius:15px; opacity:0; transform:translateY(50px); transition:1s; max-width:1000px;}
+section.visible {opacity:1; transform:translateY(0);}
+h2 {color:#FFD700; margin-bottom:20px; font-size:2.5em; text-shadow:0 0 10px #fff;}
+p {max-width:800px; margin:0 auto 20px; font-size:1.1em; line-height:1.6;}
+
+/* Buttons */
+.btn {background:#FFD700; color:#000; padding:15px 40px; font-size:18px; border:none; border-radius:10px; cursor:pointer; transition:0.3s; margin-top:15px;}
+.btn:hover {transform:scale(1.05); box-shadow:0 5px 15px rgba(255,255,0,0.5);}
+
+/* QR Image */
+.qr-img {width:220px; margin-top:20px; border-radius:15px; box-shadow:0 10px 20px rgba(255,255,0,0.4);}
+
+/* Arti Timings */
+.arti {margin:15px 0; font-size:1.3em; color:#FFD700;}
+
+/* Receipt Modal */
+.receipt {display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+          background:#111; color:#FFD700; padding:40px; border-radius:15px; box-shadow:0 15px 30px rgba(255,215,0,0.5); z-index:1001; width:90%; max-width:450px; text-align:center;}
+.receipt h2 {color:#FFD700; margin-bottom:15px;}
+.close-btn {background:#FFD700; color:#000; border:none; padding:12px 25px; cursor:pointer; border-radius:8px; margin-top:20px; transition:0.3s;}
+.close-btn:hover {transform:scale(1.05);}
+
+/* Footer */
+footer {background:#111; color:#fff; padding:40px 20px; text-align:center; font-size:0.9em; margin-top:50px;}
+
+/* Scroll fade */
+section.visible {animation:fadeInDown 1s forwards;}
+
+/* Responsive */
+@media (max-width:768px){
+    header h1 {font-size:1.5em;}
+    .logo {height:50px; width:50px;}
+    h2 {font-size:2em;}
+    .qr-img {width:180px;}
+}
+@keyframes fadeInDown {0%{opacity:0; transform:translateY(-30px);}100%{opacity:1; transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<canvas id="fireworksCanvas"></canvas>
+
+<header>
+    <div style="display:flex;align-items:center">
+        <img src="G3.jpg" class="logo" alt="Logo">
+        <h1 id="title">Royal Cha Raja</h1>
+    </div>
+    <div>
+        <nav>
+            <a href="#home" class="lang" data-en="Home" data-gu="હોમ">Home</a>
+            <a href="#about" class="lang" data-en="About" data-gu="વિશે">About</a>
+            <a href="#donate" class="lang" data-en="Donate" data-gu="દાન">Donate</a>
+            <a href="#contact" class="lang" data-en="Contact" data-gu="સંપર્ક">Contact</a>
+        </nav>
+        <select id="langSelect" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="gu">ગુજરાતી</option>
+        </select>
+    </div>
+</header>
+
+<section id="home">
+    <h2 class="lang" data-en="Welcome to Royal Cha Raja" data-gu="રોયલ ચા રાજા માં આપનું સ્વાગત છે">Welcome to Royal Cha Raja</h2>
+    <p class="lang" data-en="Celebrate devotion and culture with Royal Cha Raja." data-gu="રોયલ ચા રાજા સાથે ભક્તિ અને સંસ્કૃતિનો ઉત્સવ મનાવો.">Celebrate devotion and culture with Royal Cha Raja.</p>
+</section>
+
+<section id="about">
+    <h2 class="lang" data-en="About Royal Cha Raja" data-gu="રોયલ ચા રાજા વિશે">About Royal Cha Raja</h2>
+    <p class="lang" data-en="Royal Cha Raja is a festival celebrating Lord Ganesh, fostering community unity and cultural preservation." data-gu="રોયલ ચા રાજા લોર્ડ ગણેશને ઉજવતો ઉત્સવ છે, જે સમુદાયની એકતા અને સંસ્કૃતિક જાળવણીને પ્રોત્સાહિત કરે છે.">Royal Cha Raja is a festival celebrating Lord Ganesh...</p>
+</section>
+
+<section id="donate">
+    <h2 class="lang" data-en="Support Royal Cha Raja" data-gu="રોયલ ચા રાજાને સપોર્ટ કરો">Support Royal Cha Raja</h2>
+    <p class="lang" data-en="Scan the UPI QR code or select an amount to generate PDF receipt." data-gu="યુપીઆઈ QR કોડ સ્કેન કરો અથવા PDF રસીદ જનરેટ કરવા માટે રકમ પસંદ કરો.">Scan the UPI QR code or select an amount...</p>
+    <img src="payment.jpg" alt="UPI QR" class="qr-img">
+    <br><br>
+    <label class="lang" data-en="Select Donation Amount: " data-gu="દાનની રકમ પસંદ કરો: ">Select Donation Amount: </label>
+    <select id="donationAmount">
+        <option value="501">₹501</option>
+        <option value="601">₹601</option>
+        <option value="701">₹701</option>
+        <option value="801">₹801</option>
+        <option value="901">₹901</option>
+        <option value="1001">₹1001</option>
+        <option value="1201">₹1201</option>
+        <option value="1301">₹1301</option>
+        <option value="1401">₹1401</option>
+        <option value="1501">₹1501</option>
+        <option value="1601">₹1601</option>
+        <option value="1701">₹1701</option>
+        <option value="custom">Custom Amount</option>
+    </select>
+    <input type="number" id="customAmount" placeholder="Enter custom amount" style="display:none; margin-top:10px; padding:8px; border-radius:5px; border:none; font-size:16px;">
+    <br><br>
+    <button class="btn lang" data-en="Donate Now" data-gu="હવે દાન કરો" onclick="donateNow()">Donate Now</button>
+    <div class="arti">
+        <p class="lang" data-en="Morning Arti: 9:00 AM" data-gu="સવારની આરતી: 9:00 AM">Morning Arti: 9:00 AM</p>
+        <p class="lang" data-en="Evening Arti: 7:00 PM" data-gu="સાંજની આરતી: 7:00 PM">Evening Arti: 7:00 PM</p>
+    </div>
+</section>
+
+<section id="contact">
+    <h2 class="lang" data-en="Contact Us" data-gu="અમારો સંપર્ક કરો">Contact Us</h2>
+    <p>Email: contact@royalcharaja.com</p>
+    <p class="lang" data-en="Phone" data-gu="ફોન">Phone: +91 9876543210</p>
+    <p class="lang" data-en="Address" data-gu="સરનામું">Address: Lalbagh, Bangalore</p>
+</section>
+
+<div class="receipt" id="receipt">
+    <h2 class="lang" data-en="Donation Receipt" data-gu="દાન રસીદ">Donation Receipt</h2>
+    <p id="receipt-info"></p>
+    <button class="close-btn lang" data-en="Close" data-gu="બંધ કરો" onclick="closeReceipt()">Close</button>
+</div>
+
+<footer>
+    &copy; 2025 Royal Cha Raja. Festive Dark Theme with Fireworks, Parallax & PDF Receipt.
+</footer>
+
+<script>
+// Scroll animations
+const sections = document.querySelectorAll('section');
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if(entry.isIntersecting){ entry.target.classList.add('visible'); }
+    });
+},{threshold:0.2});
+sections.forEach(section => observer.observe(section));
+
+// Language switch
+function changeLanguage(lang){
+    document.querySelectorAll('.lang').forEach(el => { el.innerText = el.dataset[lang]; });
+}
+
+// Show/hide custom amount input
+document.getElementById('donationAmount').addEventListener('change',function(){
+    document.getElementById('customAmount').style.display = (this.value==='custom')?'inline-block':'none';
+});
+
+// Fireworks animation
+const canvas = document.getElementById('fireworksCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+class Firework{constructor(){this.reset();} reset(){this.x=Math.random()*canvas.width;this.y=canvas.height+Math.random()*100;this.size=Math.random()*3+1;this.speed=Math.random()*3+2;this.color=`hsl(${Math.random()*360},100%,50%)`;} update(){this.y-=this.speed;if(this.y<0){this.reset();}} draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle=this.color;ctx.fill();}}
+const fireworks = Array.from({length:150},()=>new Firework());
+function animateFireworks(){ctx.clearRect(0,0,canvas.width,canvas.height);fireworks.forEach(f=>{f.update(); f.draw();});requestAnimationFrame(animateFireworks);}
+animateFireworks();
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
+
+// PDF receipt
+function generateReceipt(amount){
+    const { jsPDF } = window.jspdf;
+    const receiptID = 'RC'+Math.floor(Math.random()*1000000);
+    const date = new Date().toLocaleDateString();
+    const infoText = `Royal Cha Raja Donation Receipt\n\nReceipt ID: ${receiptID}\nAmount: ₹${amount}\nDate: ${date}\nThank you for supporting Royal Cha Raja!`;
+    document.getElementById('receipt-info').innerText = infoText;
+    document.getElementById('receipt').style.display='block';
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text(infoText,10,20);
+    doc.save(`RoyalChaRaja_Receipt_${receiptID}.pdf`);
+}
+function closeReceipt(){document.getElementById('receipt').style.display='none';}
+
+// Donate now - redirect to PhonePe
+function donateNow(){
+    let sel = document.getElementById('donationAmount').value;
+    let amount = (sel==='custom')?document.getElementById('customAmount').value:sel;
+    if(!amount || amount<1){ alert("Enter a valid donation amount."); return; }
+    generateReceipt(amount);
+    // Redirect to PhonePe UPI (replace with your link)
+    window.open('https://www.phonepe.com/upi/', '_blank');
+}
+</script>
+
+</body>
+</html>
